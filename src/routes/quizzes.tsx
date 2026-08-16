@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { Loader2, ListChecks } from "lucide-react";
+import { Loader2, ListChecks, Timer } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 
@@ -28,6 +28,7 @@ type QuizRow = {
   description: string;
   category: string;
   created_at: string;
+  time_limit_seconds: number | null;
   profiles: { display_name: string } | null;
   questions: { count: number }[];
 };
@@ -35,7 +36,7 @@ type QuizRow = {
 async function fetchQuizzes() {
   const { data, error } = await supabase
     .from("quizzes")
-    .select("id, title, description, category, created_at, profiles(display_name), questions(count)")
+    .select("id, title, description, category, created_at, time_limit_seconds, profiles(display_name), questions(count)")
     .eq("published", true)
     .order("created_at", { ascending: false });
   if (error) throw new Error(error.message);
@@ -81,9 +82,17 @@ function QuizzesPage() {
               params={{ quizId: quiz.id }}
               className="card-pop flex flex-col p-6 transition-transform hover:-translate-y-1"
             >
-              <span className="w-fit rounded-full border-2 border-ink bg-accent px-3 py-0.5 text-xs font-bold">
-                {quiz.category}
-              </span>
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="w-fit rounded-full border-2 border-ink bg-accent px-3 py-0.5 text-xs font-bold">
+                  {quiz.category}
+                </span>
+                {quiz.time_limit_seconds ? (
+                  <span className="flex w-fit items-center gap-1 rounded-full border-2 border-ink bg-secondary px-3 py-0.5 text-xs font-bold text-secondary-foreground">
+                    <Timer className="size-3" />
+                    {Math.round(quiz.time_limit_seconds / 60)} min
+                  </span>
+                ) : null}
+              </div>
               <h2 className="mt-3 text-2xl font-bold">{quiz.title}</h2>
               {quiz.description ? (
                 <p className="mt-2 line-clamp-2 text-sm text-muted-foreground">{quiz.description}</p>
