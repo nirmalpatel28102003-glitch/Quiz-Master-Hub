@@ -35,6 +35,12 @@ const quizSchema = z.object({
   title: z.string().trim().min(3, "Give your quiz a title (3+ characters).").max(120),
   description: z.string().trim().max(400),
   category: z.string().trim().min(1).max(40),
+  timeLimitMinutes: z
+    .number()
+    .int("Time limit must be a whole number of minutes.")
+    .min(1, "Time limit must be at least 1 minute.")
+    .max(120, "Time limit can't be longer than 120 minutes.")
+    .nullable(),
   questions: z
     .array(
       z.object({
@@ -45,6 +51,7 @@ const quizSchema = z.object({
     )
     .min(1, "Add at least one question."),
 });
+
 
 function CreateQuizPage() {
   const navigate = useNavigate();
