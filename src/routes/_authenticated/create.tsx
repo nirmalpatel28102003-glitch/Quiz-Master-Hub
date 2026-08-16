@@ -168,7 +168,36 @@ function CreateQuizPage() {
             onChange={(e) => setCategory(e.target.value)}
           />
         </div>
+        <div className="space-y-3 rounded-2xl border-2 border-ink bg-background p-4">
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <Label htmlFor="timed" className="text-base">
+                Time limit
+              </Label>
+              <p className="text-sm text-muted-foreground">
+                Optional — players must finish before the clock runs out.
+              </p>
+            </div>
+            <Switch id="timed" checked={timed} onCheckedChange={setTimed} />
+          </div>
+          {timed ? (
+            <div className="flex items-center gap-3">
+              <Input
+                id="timeLimit"
+                type="number"
+                min={1}
+                max={120}
+                value={timeLimitMinutes}
+                onChange={(e) => setTimeLimitMinutes(e.target.value)}
+                className="w-28"
+                aria-label="Time limit in minutes"
+              />
+              <span className="text-sm font-semibold">minutes</span>
+            </div>
+          ) : null}
+        </div>
       </div>
+
 
       <div className="mt-8 space-y-5">
         {questions.map((question, qIndex) => (
