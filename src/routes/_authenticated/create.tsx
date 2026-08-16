@@ -103,6 +103,9 @@ function CreateQuizPage() {
           title: parsed.data.title,
           description: parsed.data.description,
           category: parsed.data.category,
+          time_limit_seconds:
+            parsed.data.timeLimitMinutes === null ? null : parsed.data.timeLimitMinutes * 60,
+
         })
         .select("id")
         .single();
