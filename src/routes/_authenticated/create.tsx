@@ -58,8 +58,11 @@ function CreateQuizPage() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("General");
+  const [timed, setTimed] = useState(false);
+  const [timeLimitMinutes, setTimeLimitMinutes] = useState("5");
   const [questions, setQuestions] = useState<DraftQuestion[]>([emptyQuestion()]);
   const [busy, setBusy] = useState(false);
+
 
   function updateQuestion(index: number, patch: Partial<DraftQuestion>) {
     setQuestions((prev) => prev.map((q, i) => (i === index ? { ...q, ...patch } : q)));
