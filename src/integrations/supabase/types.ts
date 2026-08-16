@@ -113,6 +113,7 @@ export type Database = {
           description: string
           id: string
           published: boolean
+          time_limit_seconds: number | null
           title: string
         }
         Insert: {
@@ -122,6 +123,7 @@ export type Database = {
           description?: string
           id?: string
           published?: boolean
+          time_limit_seconds?: number | null
           title: string
         }
         Update: {
@@ -131,6 +133,7 @@ export type Database = {
           description?: string
           id?: string
           published?: boolean
+          time_limit_seconds?: number | null
           title?: string
         }
         Relationships: [

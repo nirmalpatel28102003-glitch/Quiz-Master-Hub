@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 
 export const Route = createFileRoute("/_authenticated/create")({
@@ -35,6 +36,12 @@ const quizSchema = z.object({
   title: z.string().trim().min(3, "Give your quiz a title (3+ characters).").max(120),
   description: z.string().trim().max(400),
   category: z.string().trim().min(1).max(40),
+  timeLimitMinutes: z
+    .number()
+    .int("Time limit must be a whole number of minutes.")
+    .min(1, "Time limit must be at least 1 minute.")
+    .max(120, "Time limit can't be longer than 120 minutes.")
+    .nullable(),
   questions: z
     .array(
       z.object({
@@ -46,13 +53,17 @@ const quizSchema = z.object({
     .min(1, "Add at least one question."),
 });
 
+
 function CreateQuizPage() {
   const navigate = useNavigate();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("General");
+  const [timed, setTimed] = useState(false);
+  const [timeLimitMinutes, setTimeLimitMinutes] = useState("5");
   const [questions, setQuestions] = useState<DraftQuestion[]>([emptyQuestion()]);
   const [busy, setBusy] = useState(false);
+
 
   function updateQuestion(index: number, patch: Partial<DraftQuestion>) {
     setQuestions((prev) => prev.map((q, i) => (i === index ? { ...q, ...patch } : q)));
@@ -67,7 +78,14 @@ function CreateQuizPage() {
   }
 
   async function handlePublish() {
-    const parsed = quizSchema.safeParse({ title, description, category, questions });
+    const parsed = quizSchema.safeParse({
+      title,
+      description,
+      category,
+      timeLimitMinutes: timed ? Number(timeLimitMinutes) : null,
+      questions,
+    });
+
     if (!parsed.success) {
       toast.error(parsed.error.issues[0]?.message ?? "Please check the form.");
       return;
@@ -86,6 +104,9 @@ function CreateQuizPage() {
           title: parsed.data.title,
           description: parsed.data.description,
           category: parsed.data.category,
+          time_limit_seconds:
+            parsed.data.timeLimitMinutes === null ? null : parsed.data.timeLimitMinutes * 60,
+
         })
         .select("id")
         .single();
@@ -148,7 +169,36 @@ function CreateQuizPage() {
             onChange={(e) => setCategory(e.target.value)}
           />
         </div>
+        <div className="space-y-3 rounded-2xl border-2 border-ink bg-background p-4">
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <Label htmlFor="timed" className="text-base">
+                Time limit
+              </Label>
+              <p className="text-sm text-muted-foreground">
+                Optional — players must finish before the clock runs out.
+              </p>
+            </div>
+            <Switch id="timed" checked={timed} onCheckedChange={setTimed} />
+          </div>
+          {timed ? (
+            <div className="flex items-center gap-3">
+              <Input
+                id="timeLimit"
+                type="number"
+                min={1}
+                max={120}
+                value={timeLimitMinutes}
+                onChange={(e) => setTimeLimitMinutes(e.target.value)}
+                className="w-28"
+                aria-label="Time limit in minutes"
+              />
+              <span className="text-sm font-semibold">minutes</span>
+            </div>
+          ) : null}
+        </div>
       </div>
+
 
       <div className="mt-8 space-y-5">
         {questions.map((question, qIndex) => (

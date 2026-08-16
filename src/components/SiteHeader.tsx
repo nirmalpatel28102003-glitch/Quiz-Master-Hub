@@ -14,7 +14,7 @@ export function SiteHeader() {
     await queryClient.cancelQueries();
     queryClient.clear();
     await supabase.auth.signOut();
-    navigate({ to: "/auth", replace: true });
+    navigate({ to: "/auth", search: { redirect: undefined }, replace: true });
   }
 
   return (
@@ -53,7 +53,7 @@ export function SiteHeader() {
             </>
           ) : (
             <Button asChild variant="pop" size="sm">
-              <Link to="/auth">Sign in</Link>
+              <Link to="/auth" search={{ redirect: undefined }}>Sign in</Link>
             </Button>
           )}
         </nav>
