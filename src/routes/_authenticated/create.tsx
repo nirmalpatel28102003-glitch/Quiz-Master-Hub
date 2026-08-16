@@ -77,7 +77,14 @@ function CreateQuizPage() {
   }
 
   async function handlePublish() {
-    const parsed = quizSchema.safeParse({ title, description, category, questions });
+    const parsed = quizSchema.safeParse({
+      title,
+      description,
+      category,
+      timeLimitMinutes: timed ? Number(timeLimitMinutes) : null,
+      questions,
+    });
+
     if (!parsed.success) {
       toast.error(parsed.error.issues[0]?.message ?? "Please check the form.");
       return;
