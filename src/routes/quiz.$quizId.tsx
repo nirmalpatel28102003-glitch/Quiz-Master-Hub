@@ -1,8 +1,8 @@
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { Check, Loader2, X } from "lucide-react";
+import { Check, Loader2, Timer, X } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -34,7 +34,7 @@ async function fetchQuiz(quizId: string) {
   const [quiz, questions] = await Promise.all([
     supabase
       .from("quizzes")
-      .select("id, title, description, category, profiles(display_name)")
+      .select("id, title, description, category, time_limit_seconds, profiles(display_name)")
       .eq("id", quizId)
       .maybeSingle(),
     supabase
@@ -54,6 +54,7 @@ async function fetchQuiz(quizId: string) {
       title: string;
       description: string;
       category: string;
+      time_limit_seconds: number | null;
       profiles: { display_name: string } | null;
     },
     questions: (questions.data ?? []) as unknown as QuestionRow[],
@@ -75,6 +76,12 @@ function TakeQuizPage() {
   const [answers, setAnswers] = useState<Record<string, number>>({});
   const [result, setResult] = useState<GradeResult | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [deadline, setDeadline] = useState<number | null>(null);
+  const [secondsLeft, setSecondsLeft] = useState<number | null>(null);
+  const [timedOut, setTimedOut] = useState(false);
+  const submittedRef = useRef(false);
+
+  const timeLimit = data?.quiz.time_limit_seconds ?? null;
 
   const questions = data?.questions ?? [];
   const question = questions[current];
@@ -86,25 +93,61 @@ function TakeQuizPage() {
     return map;
   }, [result]);
 
-  async function handleSubmit() {
+  const handleSubmit = useCallback(
+    async (currentAnswers: Record<string, number> = answers) => {
+    if (submittedRef.current) return;
+    submittedRef.current = true;
     setSubmitting(true);
     try {
-      const graded = await grade({ data: { quizId, answers } });
+      const graded = await grade({ data: { quizId, answers: currentAnswers } });
       setResult(graded);
       if (user) {
         await persist({ data: { quizId, score: graded.score, total: graded.total } }).catch(() => {});
       }
     } catch (err) {
+      submittedRef.current = false;
       toast.error(err instanceof Error ? err.message : "Could not score the quiz.");
     } finally {
       setSubmitting(false);
     }
-  }
+    },
+    [answers, grade, persist, quizId, user],
+  );
+
+  // Start the clock once the quiz is loaded, and restart it on retry.
+  useEffect(() => {
+    if (!timeLimit || result) return;
+    if (deadline !== null) return;
+    setDeadline(Date.now() + timeLimit * 1000);
+    setSecondsLeft(timeLimit);
+  }, [timeLimit, result, deadline]);
+
+  useEffect(() => {
+    if (deadline === null || result) return;
+    const tick = () => {
+      const left = Math.max(0, Math.ceil((deadline - Date.now()) / 1000));
+      setSecondsLeft(left);
+      if (left === 0) {
+        setTimedOut(true);
+        void handleSubmit(answersRef.current);
+      }
+    };
+    tick();
+    const id = window.setInterval(tick, 250);
+    return () => window.clearInterval(id);
+  }, [deadline, result, handleSubmit]);
+
+  const answersRef = useRef(answers);
+  answersRef.current = answers;
 
   function restart() {
+    submittedRef.current = false;
     setResult(null);
     setAnswers({});
     setCurrent(0);
+    setTimedOut(false);
+    setSecondsLeft(null);
+    setDeadline(timeLimit ? Date.now() + timeLimit * 1000 : null);
   }
 
   if (isPending) {
