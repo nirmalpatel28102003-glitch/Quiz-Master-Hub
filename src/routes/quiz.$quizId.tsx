@@ -188,6 +188,11 @@ function TakeQuizPage() {
           <p className="mt-3 font-display text-6xl font-bold text-gradient-sunset">
             {result.score}/{result.total}
           </p>
+          {timedOut ? (
+            <p className="mt-3 inline-flex items-center gap-1 rounded-full border-2 border-ink bg-destructive px-3 py-0.5 text-sm font-bold text-destructive-foreground">
+              <Timer className="size-3.5" /> Time ran out
+            </p>
+          ) : null}
           <p className="mt-2 text-muted-foreground">
             {percent}% ·{" "}
             {percent === 100
@@ -275,7 +280,20 @@ function TakeQuizPage() {
           <span>
             Question {current + 1} of {questions.length}
           </span>
-          <span>{Object.keys(answers).length} answered</span>
+          <span className="flex items-center gap-3">
+            {secondsLeft !== null ? (
+              <span
+                className={`flex items-center gap-1 rounded-full border-2 border-ink px-2.5 py-0.5 font-bold tabular-nums ${
+                  secondsLeft <= 10 ? "bg-destructive text-destructive-foreground" : "bg-accent text-foreground"
+                }`}
+                aria-live="polite"
+              >
+                <Timer className="size-3.5" />
+                {Math.floor(secondsLeft / 60)}:{String(secondsLeft % 60).padStart(2, "0")}
+              </span>
+            ) : null}
+            <span>{Object.keys(answers).length} answered</span>
+          </span>
         </div>
         <Progress value={progress} className="mt-2 h-3 border-2 border-ink" />
       </div>
