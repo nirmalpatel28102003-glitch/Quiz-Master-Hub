@@ -158,7 +158,7 @@ function TakeQuizPage() {
           </p>
           {!user ? (
             <p className="mt-4 text-sm text-muted-foreground">
-              <Link to="/auth" className="font-semibold underline underline-offset-4">
+              <Link to="/auth" search={{ redirect: undefined }} className="font-semibold underline underline-offset-4">
                 Sign in
               </Link>{" "}
               to save your scores.
