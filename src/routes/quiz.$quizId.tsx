@@ -80,6 +80,8 @@ function TakeQuizPage() {
   const [secondsLeft, setSecondsLeft] = useState<number | null>(null);
   const [timedOut, setTimedOut] = useState(false);
   const submittedRef = useRef(false);
+  const answersRef = useRef(answers);
+  answersRef.current = answers;
 
   const timeLimit = data?.quiz.time_limit_seconds ?? null;
 
@@ -136,9 +138,6 @@ function TakeQuizPage() {
     const id = window.setInterval(tick, 250);
     return () => window.clearInterval(id);
   }, [deadline, result, handleSubmit]);
-
-  const answersRef = useRef(answers);
-  answersRef.current = answers;
 
   function restart() {
     submittedRef.current = false;
@@ -323,7 +322,7 @@ function TakeQuizPage() {
             variant="pop"
             size="lg"
             disabled={selected === undefined || submitting}
-            onClick={handleSubmit}
+            onClick={() => handleSubmit()}
           >
             {submitting ? <Loader2 className="animate-spin" /> : null}
             Finish & see score
