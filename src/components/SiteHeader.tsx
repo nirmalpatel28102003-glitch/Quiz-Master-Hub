@@ -29,7 +29,6 @@ export function SiteHeader() {
 
         <nav className="flex items-center gap-1 sm:gap-2">
           {!loading && user ? (
-
             <>
               <Link
                 to="/quizzes"
@@ -38,7 +37,7 @@ export function SiteHeader() {
               >
                 Browse
               </Link>
-
+              <Link
                 to="/my-quizzes"
                 className="hidden rounded-lg px-3 py-2 text-sm font-semibold text-muted-foreground transition-colors hover:text-foreground sm:block"
                 activeProps={{ className: "text-foreground" }}
