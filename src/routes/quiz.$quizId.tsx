@@ -10,7 +10,7 @@ import { gradeQuiz, saveAttempt, type GradeResult } from "@/lib/quiz.functions";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 
-export const Route = createFileRoute("/_authenticated/quiz/$quizId")({
+export const Route = createFileRoute("/quiz/$quizId")({
   head: () => ({
     meta: [
       { title: "Take the quiz — Quizzly" },

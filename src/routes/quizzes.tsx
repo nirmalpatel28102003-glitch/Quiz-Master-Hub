@@ -4,7 +4,7 @@ import { Loader2, ListChecks, Timer } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 
-export const Route = createFileRoute("/_authenticated/quizzes")({
+export const Route = createFileRoute("/quizzes")({
   head: () => ({
     meta: [
       { title: "Browse quizzes — Quizzly" },
