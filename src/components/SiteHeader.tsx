@@ -32,6 +32,13 @@ export function SiteHeader() {
 
             <>
               <Link
+                to="/quizzes"
+                className="rounded-lg px-3 py-2 text-sm font-semibold text-muted-foreground transition-colors hover:text-foreground"
+                activeProps={{ className: "text-foreground" }}
+              >
+                Browse
+              </Link>
+
                 to="/my-quizzes"
                 className="hidden rounded-lg px-3 py-2 text-sm font-semibold text-muted-foreground transition-colors hover:text-foreground sm:block"
                 activeProps={{ className: "text-foreground" }}
