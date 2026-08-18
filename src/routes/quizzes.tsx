@@ -30,13 +30,13 @@ type QuizRow = {
   created_at: string;
   time_limit_seconds: number | null;
   profiles: { display_name: string } | null;
-  questions: { count: number }[];
+  questions: { id: string }[];
 };
 
 async function fetchQuizzes() {
   const { data, error } = await supabase
     .from("quizzes")
-    .select("id, title, description, category, created_at, time_limit_seconds, profiles(display_name), questions(count)")
+    .select("id, title, description, category, created_at, time_limit_seconds, profiles(display_name), questions(id)")
     .eq("published", true)
     .order("created_at", { ascending: false });
   if (error) throw new Error(error.message);
@@ -100,7 +100,7 @@ function QuizzesPage() {
               <div className="mt-5 flex items-center justify-between text-sm text-muted-foreground">
                 <span>by {quiz.profiles?.display_name ?? "Anonymous"}</span>
                 <span className="font-semibold text-foreground">
-                  {quiz.questions?.[0]?.count ?? 0} questions
+                  {quiz.questions?.length ?? 0} questions
                 </span>
               </div>
             </Link>
