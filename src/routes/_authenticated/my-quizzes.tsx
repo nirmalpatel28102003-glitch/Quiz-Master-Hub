@@ -82,7 +82,7 @@ function MyQuizzesPage() {
                 </span>
                 <h3 className="mt-3 text-lg font-bold">{quiz.title}</h3>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  {(quiz.questions as unknown as { count: number }[])?.[0]?.count ?? 0} questions
+                  {(quiz.questions as unknown as { id: string }[])?.length ?? 0} questions
                 </p>
               </Link>
             ))}
