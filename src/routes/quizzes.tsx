@@ -100,7 +100,7 @@ function QuizzesPage() {
               <div className="mt-5 flex items-center justify-between text-sm text-muted-foreground">
                 <span>by {quiz.profiles?.display_name ?? "Anonymous"}</span>
                 <span className="font-semibold text-foreground">
-                  {quiz.questions?.[0]?.count ?? 0} questions
+                  {quiz.questions?.length ?? 0} questions
                 </span>
               </div>
             </Link>
