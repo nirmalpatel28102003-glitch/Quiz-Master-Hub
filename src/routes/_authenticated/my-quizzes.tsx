@@ -24,7 +24,7 @@ async function fetchMine() {
   const [quizzes, attempts] = await Promise.all([
     supabase
       .from("quizzes")
-      .select("id, title, category, created_at, questions(count)")
+      .select("id, title, category, created_at, questions(id)")
       .eq("creator_id", userId)
       .order("created_at", { ascending: false }),
     supabase
