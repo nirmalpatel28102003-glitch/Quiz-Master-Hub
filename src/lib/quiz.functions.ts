@@ -12,6 +12,7 @@ export type GradedQuestion = {
   correctIndex: number;
   selectedIndex: number;
   isCorrect: boolean;
+  explanation: string;
 };
 
 export type GradeResult = {
