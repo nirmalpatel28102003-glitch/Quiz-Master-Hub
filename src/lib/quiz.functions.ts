@@ -32,7 +32,7 @@ export const gradeQuiz = createServerFn({ method: "POST" })
 
     const { data: rows, error } = await supabaseAdmin
       .from("questions")
-      .select("id, correct_index")
+      .select("id, correct_index, explanation")
       .eq("quiz_id", data.quizId);
 
     if (error) throw new Error(error.message);
