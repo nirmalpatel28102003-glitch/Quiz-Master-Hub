@@ -71,6 +71,7 @@ export type Database = {
         Row: {
           correct_index: number
           created_at: string
+          explanation: string
           id: string
           options: Json
           position: number
@@ -80,6 +81,7 @@ export type Database = {
         Insert: {
           correct_index: number
           created_at?: string
+          explanation?: string
           id?: string
           options: Json
           position?: number
@@ -89,6 +91,7 @@ export type Database = {
         Update: {
           correct_index?: number
           created_at?: string
+          explanation?: string
           id?: string
           options?: Json
           position?: number

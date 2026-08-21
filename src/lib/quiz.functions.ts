@@ -12,6 +12,7 @@ export type GradedQuestion = {
   correctIndex: number;
   selectedIndex: number;
   isCorrect: boolean;
+  explanation: string;
 };
 
 export type GradeResult = {
@@ -31,7 +32,7 @@ export const gradeQuiz = createServerFn({ method: "POST" })
 
     const { data: rows, error } = await supabaseAdmin
       .from("questions")
-      .select("id, correct_index")
+      .select("id, correct_index, explanation")
       .eq("quiz_id", data.quizId);
 
     if (error) throw new Error(error.message);
@@ -44,6 +45,7 @@ export const gradeQuiz = createServerFn({ method: "POST" })
         correctIndex: row.correct_index,
         selectedIndex,
         isCorrect: selectedIndex === row.correct_index,
+        explanation: row.explanation ?? "",
       };
     });
 
