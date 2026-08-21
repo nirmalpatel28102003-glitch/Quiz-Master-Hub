@@ -28,9 +28,14 @@ export const Route = createFileRoute("/_authenticated/create")({
   component: CreateQuizPage,
 });
 
-type DraftQuestion = { prompt: string; options: string[]; correctIndex: number };
+type DraftQuestion = { prompt: string; options: string[]; correctIndex: number; explanation: string };
 
-const emptyQuestion = (): DraftQuestion => ({ prompt: "", options: ["", "", "", ""], correctIndex: 0 });
+const emptyQuestion = (): DraftQuestion => ({
+  prompt: "",
+  options: ["", "", "", ""],
+  correctIndex: 0,
+  explanation: "",
+});
 
 const quizSchema = z.object({
   title: z.string().trim().min(3, "Give your quiz a title (3+ characters).").max(120),
@@ -48,6 +53,7 @@ const quizSchema = z.object({
         prompt: z.string().trim().min(3, "Every question needs text."),
         options: z.array(z.string().trim().min(1, "Every option needs text.")).min(2).max(6),
         correctIndex: z.number().int().min(0),
+        explanation: z.string().trim().max(500),
       }),
     )
     .min(1, "Add at least one question."),
@@ -118,6 +124,7 @@ function CreateQuizPage() {
           prompt: q.prompt,
           options: q.options,
           correct_index: q.correctIndex,
+          explanation: q.explanation,
           position: index,
         })),
       );
@@ -269,6 +276,17 @@ function CreateQuizPage() {
                   ) : null}
                 </div>
               ))}
+            </div>
+
+            <div className="mt-5 space-y-2">
+              <Label htmlFor={`explanation-${qIndex}`}>Explanation (optional)</Label>
+              <Textarea
+                id={`explanation-${qIndex}`}
+                value={question.explanation}
+                maxLength={500}
+                onChange={(e) => updateQuestion(qIndex, { explanation: e.target.value })}
+                placeholder="Shown to players in their results after they finish."
+              />
             </div>
 
             {question.options.length < 6 ? (

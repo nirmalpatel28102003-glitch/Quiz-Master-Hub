@@ -95,6 +95,12 @@ function TakeQuizPage() {
     return map;
   }, [result]);
 
+  const explanationById = useMemo(() => {
+    const map: Record<string, string> = {};
+    result?.questions.forEach((q) => (map[q.questionId] = q.explanation));
+    return map;
+  }, [result]);
+
   const handleSubmit = useCallback(
     async (currentAnswers: Record<string, number> = answers) => {
     if (submittedRef.current) return;
@@ -219,6 +225,7 @@ function TakeQuizPage() {
             const chosen = answers[q.id] ?? -1;
             const correct = correctById[q.id] ?? -1;
             const isCorrect = chosen === correct;
+            const explanation = explanationById[q.id]?.trim();
             return (
               <li key={q.id} className="card-pop p-5">
                 <div className="flex items-start gap-3">
@@ -239,6 +246,12 @@ function TakeQuizPage() {
                     {!isCorrect ? (
                       <p className="text-sm text-muted-foreground">
                         You answered: {chosen >= 0 ? q.options[chosen] : "nothing"}
+                      </p>
+                    ) : null}
+                    {explanation ? (
+                      <p className="mt-3 rounded-2xl border-2 border-ink bg-accent/40 px-3 py-2 text-sm">
+                        <span className="font-bold">Why: </span>
+                        {explanation}
                       </p>
                     ) : null}
                   </div>
