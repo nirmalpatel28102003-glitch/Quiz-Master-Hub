@@ -45,6 +45,7 @@ export const gradeQuiz = createServerFn({ method: "POST" })
         correctIndex: row.correct_index,
         selectedIndex,
         isCorrect: selectedIndex === row.correct_index,
+        explanation: row.explanation ?? "",
       };
     });
 
