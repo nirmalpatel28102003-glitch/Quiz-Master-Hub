@@ -1,0 +1,2 @@
+ALTER TABLE public.quizzes ADD COLUMN IF NOT EXISTS time_limit_seconds integer;
+ALTER TABLE public.quizzes ADD CONSTRAINT quizzes_time_limit_positive CHECK (time_limit_seconds IS NULL OR (time_limit_seconds >= 10 AND time_limit_seconds <= 7200));
